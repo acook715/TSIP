@@ -1,0 +1,198 @@
+---
+title: "year_comparisons_CF"
+output: html_document
+---
+```{r}
+library("dplyr")
+library("stringr")
+library("tidyverse")
+library("mosaic")
+library("ggridges")
+library("ggplot2")
+
+Main1922_paired_long_copy_23$Year <- as.character(Main1922_paired_long_copy_23$Year)
+```
+
+```{r}
+#boxplot for yr per depth
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  ggplot(aes(x = Depth, y = TC, fill = Year)) +
+  geom_boxplot() + 
+  scale_fill_manual(values = c("#C3DB6E", "#2A5235", "#FF5733")) +  # Add a third color
+  theme_bw() +
+  ylab("Percent Soil Carbon") +
+  xlab("Depth (cm)") +
+  ggtitle("Main Farm")
+```
+ 
+```{r} 
+#ridge plot -> scenario 1, both depths
+library(ggridges)
+
+labels <- c("0-15" = "0-15 cm", "15-30" = "15-30 cm")
+
+# First Plot
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_1 %in% c("Annual", "Perennial")) %>%
+  ggplot(aes(x = TC, y = Year, fill = Scenario_1)) +
+  geom_density_ridges(aes(y = Depth), scale = 0.9, alpha = 0.6) +  # Specify y aesthetic
+  scale_fill_manual(values = c("#2A5235", "#FFD33D"), name = "Management") +
+  coord_cartesian(xlim = c(0, 4)) +
+  xlab("Percent Soil Carbon") +
+  ggtitle("Main Farm") +
+  theme_bw() +
+  facet_wrap(~Depth, labeller = labeller(Depth = labels))
+
+# Second Plot
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_1 %in% c("Annual", "Perennial")) %>%
+  ggplot(aes(x = TC, y = Depth, fill = Year)) +
+  geom_density_ridges(scale = 0.9, alpha = 0.6) +
+  scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733")) +  # Add a third color
+  coord_cartesian(xlim = c(0, 4)) +
+  xlab("Percent Soil Carbon") +
+  ggtitle("Main Farm") +
+  ylab("Depth (cm)") +
+  theme_bw() +
+  facet_wrap(~Scenario_1, labeller = labeller(Scenario_1 = c("Annual" = "Annual", "Perennial" = "Perennial")))
+
+# Third Plot
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_1 %in% c("Annual", "Perennial")) %>%
+  ggplot(aes(x = Scenario_1, y = TC, fill = Year)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733")) +  # Add a third color
+  theme_bw() +
+  ylab("Percent Soil Carbon") +
+  xlab("Plant Type") +
+  ggtitle("Main Farm") +
+  facet_wrap(~Depth, labeller = labeller(Depth = labels)) +
+  scale_y_continuous(limits = c(-0.5, 5))
+
+``` 
+
+```{r}
+#ridge plot -> scenario 2, both depths
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_2 %in% c("Non-Agroforestry", "Agroforestry")) %>%
+  ggplot(aes(x = TC, y = Year, fill = Scenario_2))+
+  geom_density_ridges(scale = 0.9, alpha = 0.6)+
+  scale_fill_manual(values = c("#2A5235", "#FFD33D"), name = "Management")+
+  coord_cartesian(xlim=c(0, 5))+
+  xlab("Percent Soil Carbon")+
+  ggtitle("Main Farm")+
+  theme_bw()+
+  facet_wrap(~Depth, labeller=labeller(Depth = labels))
+
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_2 %in% c("Non-Agroforestry", "Agroforestry")) %>%
+  ggplot(aes(x = TC, y = Depth, fill = Year))+
+  geom_density_ridges(scale = 0.9, alpha = 0.6)+
+  scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733"))+
+  coord_cartesian(xlim=c(0, 4.5))+
+  xlab("Percent Soil Carbon")+
+  ggtitle("Main Farm")+
+  ylab("Depth (cm)")+
+  theme_bw()+
+  facet_wrap(~Scenario_2)
+
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_2 %in% c("Non-Agroforestry", "Agroforestry")) %>%
+  ggplot(aes(x = Scenario_2, y = TC, fill = Year))+
+  geom_boxplot()+ scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733"))+
+  theme_bw()+
+  ylab("Percent Soil Carbon")+
+  xlab("Management")+
+  ggtitle("Main Farm")+
+  facet_wrap(~Depth, labeller=labeller(Depth = labels))+
+  scale_y_continuous(limits = c(-0.5,5))
+```
+
+```{r}
+#ridge plot -> scenario 3, both depths
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_3 %in% c("Cattle Grazing", "Sheep Grazing")) %>%
+  ggplot(aes(x = TC, y = Year, fill = Scenario_3))+
+  geom_density_ridges(scale = 0.9, alpha = 0.6)+
+  scale_fill_manual(values = c("#2A5235", "#FFD33D"), name = "Management")+
+  coord_cartesian(xlim=c(0, 4))+
+  xlab("Percent Soil Carbon")+
+  ggtitle("Main Farm")+
+  theme_bw()+
+  facet_wrap(~Depth, labeller=labeller(Depth = labels))
+
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_3 %in% c("Cattle Grazing", "Sheep Grazing")) %>%
+  ggplot(aes(x = TC, y = Depth, fill = Year))+
+  geom_density_ridges(scale = 0.9, alpha = 0.6)+
+  scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733"))+
+  coord_cartesian(xlim=c(0, 4))+
+  xlab("Percent Soil Carbon")+
+  ggtitle("Main Farm")+
+  theme_bw()+
+  ylab("Depth (cm)")+
+  facet_wrap(~Scenario_3)
+
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  filter(Scenario_3 %in% c("Cattle Grazing", "Sheep Grazing")) %>%
+  ggplot(aes(x = Scenario_3, y = TC, fill = Year))+
+  geom_boxplot()+ scale_fill_manual(values = c("#2A5235", "#FFD33D" ,"#FF5733"))+
+  theme_bw()+
+  ylab("Percent Soil Carbon")+
+  xlab("Management")+
+  ggtitle("Main Farm")+
+  facet_wrap(~Depth, labeller=labeller(Depth = labels))+
+  scale_y_continuous(limits = c(-0.5,5))
+```
+
+```{r}
+#ridge plot -> by depth 
+Main1922_paired_long_copy_23 %>%
+  filter(Depth %in% c("0-15", "15-30")) %>%
+  ggplot(aes(x = TC, y = Depth, fill = Year))+
+  geom_density_ridges(scale = 0.9, alpha = 0.6)+
+  scale_fill_manual(values = c("#2A5235", "#FFD33D", "#FF5733"))+
+  coord_cartesian(xlim=c(0, 4))+
+  theme_bw()+
+  ggtitle("Main Farm")+ 
+  ylab("Depth (cm)")+
+  xlab("Percent Soil Carbon")
+```
+
+```{r}
+#dif means
+sum_dataMSC1 <- Main1922_paired_long_copy_23 %>% 
+  filter(Depth != "0-30") %>% 
+  filter(Scenario_1 %in% c("Annual", "Perennial")) %>%
+  group_by(Year,Depth, Scenario_1) %>%  
+  summarize(mean = mean(TC), sd=sd(TC))
+
+sum_dataMSC1
+
+sum_dataMSC2 <- Main1922_paired_long_copy_23 %>% 
+  filter(Depth != "0-30") %>% 
+  filter(Scenario_2 %in% c("Agroforestry", "Non-Agroforestry")) %>%
+  group_by(Year,Depth, Scenario_2) %>%  
+  summarize(mean = mean(TC)) 
+
+sum_dataMSC2
+
+sum_dataMSC3 <- Main1922_paired_long_copy_23 %>% 
+  filter(Depth != "0-30") %>% 
+  filter(Scenario_3 %in% c("Cattle Grazing", "Sheep Grazing")) %>%
+  group_by(Year,Depth, Scenario_3) %>%  
+  summarize(mean = mean(TC)) 
+
+sum_dataMSC3
+```
+
